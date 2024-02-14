@@ -2,15 +2,15 @@ package com.marvis.deliveryapi.controller;
 
 import com.marvis.deliveryapi.data.dtos.request.BoxCreationRequest;
 import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
+import com.marvis.deliveryapi.data.model.Item;
 import com.marvis.deliveryapi.service.BoxService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -24,6 +24,32 @@ public class BoxController {
         BoxCreationResponse createdBox = boxService.createBox(boxCreationRequest);
         return new ResponseEntity<>(createdBox, HttpStatus.CREATED);
 
+    }
+
+
+    @PostMapping("/box/{txref}/load-items")
+    public ResponseEntity<String> loadBoxWithItems(@PathVariable String txref, @RequestBody List<Item> items) {
+        String message = boxService.loadBoxWithItems(txref, items);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/box/{txref}/view-items")
+    public ResponseEntity<List<Item>> viewLoadedItems(@PathVariable String txref) {
+        List<Item> loadedItems = boxService.checkLoadedItems(txref);
+        return new ResponseEntity<>(loadedItems, HttpStatus.OK);
+    }
+
+    @GetMapping("/box/available-boxes")
+    public ResponseEntity<?> viewAvailableBoxes() {
+        var availableBoxes = boxService.checkAvailableBoxes();
+        return new ResponseEntity<>(availableBoxes, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/box/{txref}/battery-level")
+    public ResponseEntity<?> viewBatteryLevel(@PathVariable String txref) {
+        var batterLevel = boxService.checkBatteryLevel(txref);
+        return new ResponseEntity<>(batterLevel, HttpStatus.OK);
     }
 
 }

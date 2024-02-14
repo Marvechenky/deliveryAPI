@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,18 +21,20 @@ public class Box {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank
+    @NotBlank(message = "txref field is required")
     private String txref;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Weight limit cannot be null")
+    @Positive(message = "Weight Limit cannot be a negative value")
     private double weightLimit;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Battery capacity field cannot be null")
+    @Positive(message = "Battery capacity cannot be a negative value")
     private int batteryCapacity;
 
     @Enumerated(value = EnumType.STRING)
     private State boxState;
 
+    @OneToMany
+    private List<Item> items = new ArrayList<>();
 }

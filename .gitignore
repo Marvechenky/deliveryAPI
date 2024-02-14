@@ -1,4 +1,3 @@
-config.env
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -15,6 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
+config.env
 .idea
 *.iws
 *.iml

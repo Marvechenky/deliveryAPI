@@ -2,7 +2,7 @@ package com.marvis.deliveryapi.service;
 
 import com.marvis.deliveryapi.data.dtos.request.BoxCreationRequest;
 import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
-import com.marvis.deliveryapi.data.dtos.response.EmptyBox;
+import com.marvis.deliveryapi.data.model.Box;
 import com.marvis.deliveryapi.data.model.Item;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface BoxService {
 
     List<Item> checkLoadedItems(String txref);
 
-    List<EmptyBox> checkAvailableBoxes();
+    List<Box> checkAvailableBoxes();
 
     int checkBatteryLevel(String txref);
 }
