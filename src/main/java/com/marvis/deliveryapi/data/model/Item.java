@@ -45,5 +45,6 @@ public class Item {
         this.name = name;
         this.weight = weight;
         this.code = code;
+
     }
 }

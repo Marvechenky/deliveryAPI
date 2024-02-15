@@ -77,7 +77,7 @@ Authentication is not required for accessing the public endpoints of this API.
 
 Endpoints
 1. Create a Box
-   URL: http:/api/v1/box/create
+   URL: http://api/v1/box/create
    
    Method: POST
    

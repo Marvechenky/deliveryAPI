@@ -31,9 +31,5 @@ public class ItemRequest {
     @NotBlank(message = "Code field is required")
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "box_txref")
-    private Box box;
-
 
 }
