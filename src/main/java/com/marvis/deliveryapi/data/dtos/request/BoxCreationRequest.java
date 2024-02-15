@@ -24,6 +24,7 @@ public class BoxCreationRequest {
 
     @NotNull(message = "Battery capacity cannot be null")
     @Positive(message = "Battery capacity cannot be negative value")
+    @Max(value = 100, message = "Battery capacity cannot exceed 100 percent")
     private int batteryCapacity;
 
     @Enumerated(value = EnumType.STRING)

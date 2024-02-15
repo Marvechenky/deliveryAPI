@@ -5,7 +5,9 @@ import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
 import com.marvis.deliveryapi.data.model.Box;
 import com.marvis.deliveryapi.data.model.Item;
 import com.marvis.deliveryapi.data.model.State;
+import com.marvis.deliveryapi.exception.BoxBatteryLowException;
 import com.marvis.deliveryapi.exception.BoxNotFoundException;
+import com.marvis.deliveryapi.exception.BoxStateException;
 import com.marvis.deliveryapi.repository.BoxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,16 +41,17 @@ public class BoxServiceImpl implements BoxService{
 
     @Override
     public String loadBoxWithItems(String txref, List<Item> items) {
-        Box box = boxRepository.findByTxrefIgnoreCase(txref);
-        if (box == null) {
-            return "Box with txref " + txref + " not found";
+        Box box = findBox(txref);
+        if (!box.getBoxState().equals(State.IDLE)) {
+            throw new BoxStateException("Box is not in IDLE state,therefore it cannot be loaded");
         }
-        if (!box.getBoxState().equals("IDLE")) {
-            return "Box is not in IDLE state and cannot be loaded";
+        int batteryLevel = checkBatteryLevel(txref);
+        if (batteryLevel < 25) {
+            throw new BoxBatteryLowException("Battery is critically low, therefore it cannot transit to loading state");
         }
         double totalWeight = items.stream().mapToDouble(Item::getWeight).sum();
         if (totalWeight > box.getWeightLimit()) {
-            return "Total weight of items exceeds the weight limit of the box.";
+            throw new BoxStateException("Total weight of items exceed box weight limit");
         }
         box.setItems(items);
         box.setBoxState(State.LOADED);
@@ -60,10 +63,7 @@ public class BoxServiceImpl implements BoxService{
 
     @Override
     public List<Item> checkLoadedItems(String txref) {
-        Box box = boxRepository.findByTxrefIgnoreCase(txref);
-        if (box == null) {
-            throw new BoxNotFoundException("Box with txref " + txref + " not found");
-        }
+        Box box = findBox(txref);
         return box.getItems();
     }
 
@@ -74,10 +74,14 @@ public class BoxServiceImpl implements BoxService{
 
     @Override
     public int checkBatteryLevel(String txref) {
-        Box box = boxRepository.findByTxrefIgnoreCase(txref);
-        if (box == null) {
-            throw new BoxNotFoundException("Box with txref " + txref + " not found");
-        }
+       Box box = findBox(txref);
         return box.getBatteryCapacity();
     }
+
+    private Box findBox(String txref) {
+        return boxRepository.findByTxrefIgnoreCase(txref)
+                .orElseThrow(()
+                        ->  new BoxNotFoundException(String.format("Box with %s not found", txref)));
+    }
+
 }

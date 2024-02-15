@@ -17,7 +17,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Name field is required")
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
@@ -31,8 +31,8 @@ public class Item {
     @NotBlank(message = "Code field is required")
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "box_txref_txref")
-    private Box boxTxref;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "box_txref")
+    private Box box;
 
 }
