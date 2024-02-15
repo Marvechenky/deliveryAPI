@@ -1,6 +1,7 @@
 package com.marvis.deliveryapi.service;
 
 import com.marvis.deliveryapi.data.dtos.request.BoxCreationRequest;
+import com.marvis.deliveryapi.data.dtos.request.ItemRequest;
 import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
 import com.marvis.deliveryapi.data.model.Box;
 import com.marvis.deliveryapi.data.model.Item;
@@ -11,7 +12,7 @@ public interface BoxService {
 
     BoxCreationResponse createBox(BoxCreationRequest boxCreationRequest);
 
-    String loadBoxWithItems(String txref, List<Item> items);
+    void loadBoxWithItems(String txref, List<ItemRequest> itemRequests);
 
     List<Item> checkLoadedItems(String txref);
 

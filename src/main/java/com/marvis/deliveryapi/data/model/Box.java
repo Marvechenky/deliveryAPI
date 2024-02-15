@@ -23,18 +23,22 @@ public class Box {
     private Long id;
 
     @NotBlank(message = "txref field is required")
+    @Column(name = "box_txref")
     private String txref;
 
     @NotNull(message = "Weight limit cannot be null")
     @Positive(message = "Weight Limit cannot be a negative value")
+    @Column(name = "box_weight_limit")
     private double weightLimit;
 
     @NotNull(message = "Battery capacity field cannot be null")
     @Positive(message = "Battery capacity cannot be a negative value")
     @Max(value = 100, message = "Battery capacity cannot exceed 100 percent")
+    @Column(name = "box_battery_capacity")
     private int batteryCapacity;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "box_state")
     private State boxState;
 
     @OneToMany(mappedBy = "box", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

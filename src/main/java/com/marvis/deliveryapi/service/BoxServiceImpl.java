@@ -1,6 +1,7 @@
 package com.marvis.deliveryapi.service;
 
 import com.marvis.deliveryapi.data.dtos.request.BoxCreationRequest;
+import com.marvis.deliveryapi.data.dtos.request.ItemRequest;
 import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
 import com.marvis.deliveryapi.data.model.Box;
 import com.marvis.deliveryapi.data.model.Item;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,24 +42,29 @@ public class BoxServiceImpl implements BoxService{
 
 
     @Override
-    public String loadBoxWithItems(String txref, List<Item> items) {
+    public void loadBoxWithItems(String txref, List<ItemRequest> itemRequests) {
         Box box = findBox(txref);
         if (!box.getBoxState().equals(State.IDLE)) {
             throw new BoxStateException("Box is not in IDLE state,therefore it cannot be loaded");
         }
-        int batteryLevel = checkBatteryLevel(txref);
-        if (batteryLevel < 25) {
+        if (box.getBatteryCapacity() < 25) {
             throw new BoxBatteryLowException("Battery is critically low, therefore it cannot transit to loading state");
         }
-        double totalWeight = items.stream().mapToDouble(Item::getWeight).sum();
+        double totalWeight = itemRequests.stream()
+                .mapToDouble(ItemRequest::getWeight)
+                .sum();
+
         if (totalWeight > box.getWeightLimit()) {
             throw new BoxStateException("Total weight of items exceed box weight limit");
         }
+        List<Item> items = itemRequests.stream()
+                .map(itemDTO -> new Item(itemDTO.getName(),
+                        itemDTO.getWeight(), itemDTO.getCode()))
+                .collect(Collectors.toList());
+
         box.setItems(items);
         box.setBoxState(State.LOADED);
         boxRepository.save(box);
-
-        return "Items loaded into the box successfully";
 
     }
 

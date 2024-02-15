@@ -1,6 +1,7 @@
 package com.marvis.deliveryapi.controller;
 
 import com.marvis.deliveryapi.data.dtos.request.BoxCreationRequest;
+import com.marvis.deliveryapi.data.dtos.request.ItemsRequestDTO;
 import com.marvis.deliveryapi.data.dtos.response.BoxCreationResponse;
 import com.marvis.deliveryapi.data.model.Item;
 import com.marvis.deliveryapi.service.BoxService;
@@ -28,9 +29,10 @@ public class BoxController {
 
 
     @PostMapping("/box/{txref}/load-items")
-    public ResponseEntity<String> loadBoxWithItems(@PathVariable String txref, @RequestBody List<Item> items) {
-        String message = boxService.loadBoxWithItems(txref, items);
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    public ResponseEntity<?> loadBox(@PathVariable String txref, @RequestBody ItemsRequestDTO itemsRequestDTOs) {
+        var message = "Items loaded into box successfully";
+         boxService.loadBoxWithItems(txref, itemsRequestDTOs.getItems());
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     @GetMapping("/box/{txref}/view-items")
